@@ -4,7 +4,7 @@ const conversationSchema = new mongoose.Schema(
   {
     entityOne: {
       type: String,
-      enum: ["Admin", "User"],
+      enum: ["User"],
     },
     entityOneId: {
       type: mongoose.Types.ObjectId,
@@ -12,18 +12,11 @@ const conversationSchema = new mongoose.Schema(
     },
     entityTwo: {
       type: String,
-      enum: ["Admin", "User"],
+      enum: ["User"],
     },
     entityTwoId: {
       type: mongoose.Types.ObjectId,
       refPath: "entityTwo",
-    },
-    orderId: {
-      type: String,
-    },
-    lastMessage: {
-      type: mongoose.Types.ObjectId,
-      ref: "Text",
     },
     updatedAt: { type: Date, default: Date.now },
   },

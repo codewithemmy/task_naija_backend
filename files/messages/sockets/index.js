@@ -1,7 +1,6 @@
 const { default: mongoose } = require("mongoose")
 const { SocketRepository } = require("./sockets.repository")
 const fs = require("fs")
-const { OrderRepository } = require("../../order/order.repository")
 
 module.exports.socketConnection = async (io) => {
   io.on("connection", async (socket) => {
@@ -26,9 +25,6 @@ module.exports.socketConnection = async (io) => {
           socket.emit("join", `Error: ${data.message}`)
         } else {
           socket.emit("join", "Connection Successful")
-          const orders = await OrderRepository.findOrderBySocket()
-          // Emit the order details to the client
-          socket.emit("get-orders", orders)
         }
       } catch (error) {
         console.log("socket error", error)
@@ -37,10 +33,6 @@ module.exports.socketConnection = async (io) => {
 
     socket.on("disconnect", async () => {
       await SocketRepository.deleteUser(socket.id)
-      onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id)
-      console.log("user disconnected", onlineUsers)
-      // send all online users to all users
-      io.emit("get-users", onlineUsers)
     })
 
     socket.on("error", (error) => {

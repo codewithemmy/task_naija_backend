@@ -4,12 +4,12 @@ const socketSchema = new mongoose.Schema(
   {
     socketId: {
       type: String,
-      // required: true,
+      required: true,
     },
     modelType: {
       type: String,
       required: true,
-      enum: ["User", "Rider"],
+      enum: ["User"],
     },
     userId: {
       type: mongoose.Types.ObjectId,

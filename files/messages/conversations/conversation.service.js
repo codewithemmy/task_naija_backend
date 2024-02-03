@@ -2,8 +2,6 @@ const { default: mongoose } = require("mongoose")
 const { queryConstructor } = require("../../../utils")
 const { ConversationRepository } = require("./conversation.repository")
 const { ConversationMessages } = require("./conversation.messages")
-const { TextRepository } = require("../texts/text.repository")
-const { TextMessages } = require("../texts/text.messages")
 
 class ConversationService {
   static async createConversation(conversationPayload) {
@@ -31,9 +29,8 @@ class ConversationService {
 
     if (conversations.length === 0)
       return {
-        success: true,
+        success: false,
         msg: ConversationMessages.NO_CONVERSATIONS_FETCHED,
-        data: [],
       }
 
     return {

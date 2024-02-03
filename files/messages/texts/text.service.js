@@ -9,11 +9,17 @@ const { queryConstructor } = require("../../../utils")
 
 class TextService {
   static async sendText(value, textPayload) {
-    const { recipientId, recipient, message, orderId } = value.body
+    const { recipientId, recipient, message } = value.body
     const { image } = value
 
-    const { _id, isAdmin, io, profileImage, fullName, username, email } =
-      textPayload
+    const {
+      _id,
+      io,
+      image: senderImage,
+      firstName,
+      lastName,
+      email,
+    } = textPayload
 
     let conversationId
     let conversation = await ConversationRepository.findSingleConversation({
@@ -25,38 +31,28 @@ class TextService {
         {
           entityOneId: new mongoose.Types.ObjectId(recipientId),
           entityTwoId: new mongoose.Types.ObjectId(_id),
-          orderId,
-        },
-        {
-          entityOneId: new mongoose.Types.ObjectId(recipientId),
-          entityTwoId: new mongoose.Types.ObjectId(_id),
-        },
-        {
-          entityOneId: new mongoose.Types.ObjectId(_id),
-          entityTwoId: new mongoose.Types.ObjectId(recipientId),
         },
       ],
     })
 
     if (!conversation) {
       const newConversation = await ConversationRepository.createConversation({
+        entityOne: "User",
         entityOneId: new mongoose.Types.ObjectId(_id),
-        entityOne: isAdmin ? "Admin" : "User",
         entityTwoId: new mongoose.Types.ObjectId(recipientId),
         entityTwo: recipient,
-        orderId,
       })
       conversationId = newConversation._id
       conversation = newConversation
     } else conversationId = conversation._id
 
-    if (!message && !image) {
+    if (!message || !image) {
       return { success: false, msg: TextMessages.CREATE_ERROR }
     }
 
     const text = await TextRepository.createText({
       senderId: new mongoose.Types.ObjectId(_id),
-      sender: isAdmin ? "Admin" : "User",
+      sender: "User",
       recipientId: new mongoose.Types.ObjectId(recipientId),
       recipient: recipient,
       conversationId,
@@ -66,34 +62,27 @@ class TextService {
 
     if (!text._id) return { success: false, msg: TextMessages.CREATE_ERROR }
 
-    let lastMessage
-
-    lastMessage = new mongoose.Types.ObjectId(text._id)
-
     // updating conversation updatedAt so the conversation becomes the most recent
     await ConversationRepository.updateConversation(
       { _id: new mongoose.Types.ObjectId(conversationId) },
-      { updatedAt: new Date(), lastMessage }
+      { updatedAt: new Date() }
     )
 
     const socketDetails = await SocketRepository.findSingleSocket({
       userId: new mongoose.Types.ObjectId(recipientId),
     })
 
-    let socketDate = new Date()
-    let createdAt = socketDate.toISOString()
     if (socketDetails)
       io.to(socketDetails.socketId).emit("private-message", {
-        createdAt,
         recipientId: { _id: recipientId },
         message,
         conversationId,
         image,
         senderId: {
           _id,
-          profileImage,
-          fullName,
-          username: username,
+          image: senderImage,
+          firstName,
+          lastName,
           email,
         },
       })

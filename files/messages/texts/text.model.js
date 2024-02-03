@@ -4,7 +4,7 @@ const textSchema = new mongoose.Schema(
   {
     sender: {
       type: String,
-      enum: ["User", "Admin"],
+      enum: ["User"],
     },
     senderId: {
       type: mongoose.Types.ObjectId,
@@ -12,7 +12,7 @@ const textSchema = new mongoose.Schema(
     },
     recipient: {
       type: String,
-      enum: ["User", "Admin"],
+      enum: ["User"],
     },
     recipientId: {
       type: mongoose.Types.ObjectId,
