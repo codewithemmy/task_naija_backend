@@ -11,11 +11,12 @@ class TextRepository {
 
   static async fetchTextsByParams(textPayload) {
     const { limit, skip, sort, ...restOfPayload } = textPayload
+
     const texts = await Text.find({
       ...restOfPayload,
     })
-      .populate({ path: "senderId", select: "firstName lastName" })
-      .populate({ path: "recipientId", select: "firstName lastName" })
+      .populate({ path: "senderId", select: "firstName lastName fullName" })
+      .populate({ path: "recipientId", select: "firstName lastName fullName" })
       .sort(sort)
       .skip(skip)
       .limit(limit)

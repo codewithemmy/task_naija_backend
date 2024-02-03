@@ -11,6 +11,7 @@ class TextService {
   static async sendText(value, textPayload) {
     const { recipientId, recipient, message } = value.body
     const { image } = value
+    console.log("value", value)
 
     const {
       _id,
@@ -18,6 +19,7 @@ class TextService {
       image: senderImage,
       firstName,
       lastName,
+      fullName,
       email,
     } = textPayload
 
@@ -45,10 +47,11 @@ class TextService {
       conversationId = newConversation._id
       conversation = newConversation
     } else conversationId = conversation._id
-
-    if (!message || !image) {
+    if (!message) {
       return { success: false, msg: TextMessages.CREATE_ERROR }
     }
+
+    console.log("error 1")
 
     const text = await TextRepository.createText({
       senderId: new mongoose.Types.ObjectId(_id),
@@ -59,7 +62,7 @@ class TextService {
       message,
       image,
     })
-
+    console.log("error 2")
     if (!text._id) return { success: false, msg: TextMessages.CREATE_ERROR }
 
     // updating conversation updatedAt so the conversation becomes the most recent
@@ -83,6 +86,7 @@ class TextService {
           image: senderImage,
           firstName,
           lastName,
+          fullName,
           email,
         },
       })
@@ -97,16 +101,20 @@ class TextService {
       "Text"
     )
     if (error) return { success: false, msg: error }
-
-    if (!params.conversationId)
-      return { success: false, msg: TextMessages.MISSING_CONVERSATION_ID }
+    const { search, ...restOfParams } = params
+    let extra = {}
+    if (search)
+      extra = {
+        $or: [{ message: { $regex: search, $options: "i" } }],
+      }
 
     const texts = await TextRepository.fetchTextsByParams({
       $or: [
         { senderId: new mongoose.Types.ObjectId(user._id) },
         { recipientId: new mongoose.Types.ObjectId(user._id) },
       ],
-      conversationId: params.conversationId,
+      ...restOfParams,
+      ...extra,
       limit,
       skip,
       sort,
