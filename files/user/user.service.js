@@ -212,7 +212,7 @@ class UserService {
       email: email,
     })
 
-    if (!userProfile) return { success: false, msg: UserFailure.EMAIL_EXIST }
+    if (!userProfile) return { success: false, msg: UserFailure.USER_FOUND }
 
     if (!userProfile.isVerified)
       return { success: false, msg: UserFailure.VERIFIED }
@@ -246,7 +246,7 @@ class UserService {
   }
 
   static async updateProfileService(id, body) {
-    delete body.email
+    // delete body.email
 
     const user = await UserRepository.findSingleUserWithParams({
       _id: id,
@@ -262,7 +262,6 @@ class UserService {
     }
 
     if (!user) return { success: false, msg: UserFailure.FETCH }
-
     const userprofile = await UserRepository.updateUserByParams(
       { _id: new mongoose.Types.ObjectId(id) },
       {

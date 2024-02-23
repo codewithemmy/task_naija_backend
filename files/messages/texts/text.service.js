@@ -51,8 +51,6 @@ class TextService {
       return { success: false, msg: TextMessages.CREATE_ERROR }
     }
 
-    console.log("error 1")
-
     const text = await TextRepository.createText({
       senderId: new mongoose.Types.ObjectId(_id),
       sender: "User",
@@ -62,7 +60,7 @@ class TextService {
       message,
       image,
     })
-    console.log("error 2")
+
     if (!text._id) return { success: false, msg: TextMessages.CREATE_ERROR }
 
     // updating conversation updatedAt so the conversation becomes the most recent

@@ -32,6 +32,7 @@ const resentUserOtp = async (req, res, next) => {
   const [error, data] = await manageAsyncOps(
     UserService.resendOtpService(req.body)
   )
+
   if (error) return next(error)
 
   if (!data.success) return next(new CustomError(data.msg, BAD_REQUEST, data))
@@ -115,7 +116,7 @@ const userDocumentController = async (req, res, next) => {
   const [error, data] = await manageAsyncOps(
     UserService.documentUploadService(res.locals.jwt._id, value)
   )
-  console.log("error", error)
+
   if (error) return next(error)
 
   if (!data.success) return next(new CustomError(data.msg, BAD_REQUEST, data))

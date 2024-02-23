@@ -19,6 +19,7 @@ class AuthService {
     if (!confirmOtp) return { success: false, msg: AuthFailure.VERIFY_OTP }
 
     confirmOtp.verificationOtp = ""
+    confirmOtp.isVerified = true
     await confirmOtp.save()
 
     return {
