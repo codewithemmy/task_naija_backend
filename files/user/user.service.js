@@ -159,13 +159,6 @@ class UserService {
 
     if (!confirmOtp) return { success: false, msg: UserFailure.OTP }
 
-    const user = await UserRepository.create({
-      email: confirmOtp.email,
-      rating: [{}],
-    })
-
-    if (!user) return { success: false, msg: UserFailure.CREATE }
-
     confirmOtp.verificationOtp = ""
     await confirmOtp.save()
 

@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
+      unique: true,
     },
     accountType: { type: String, enum: ["Tasker", "User"] },
     favoriteBy: [{ type: String }],
