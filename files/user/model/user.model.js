@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
     },
-    accountType: { type: String },
+    accountType: { type: String, enum: ["Tasker", "User"] },
     favoriteBy: [{ type: String }],
     clients: [{ type: String }],
     password: { type: String },
