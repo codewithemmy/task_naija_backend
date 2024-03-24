@@ -97,6 +97,7 @@ class TaskService {
     if (!task) return { success: false, msg: TaskFailure.DECLINE }
 
     task.taskStatus = "declined"
+    task.status = "declined"
     await task.save()
 
     return {
