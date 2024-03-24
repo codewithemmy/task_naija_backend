@@ -13,7 +13,7 @@ class TaskService {
       {
         assignedBy: new mongoose.Types.ObjectId(locals._id),
         assignedTo: new mongoose.Types.ObjectId(payload.assignedTo),
-        contractStatus: "ongoing",
+        taskStatus: "ongoing",
       },
       {}
     )
@@ -47,24 +47,29 @@ class TaskService {
     )
 
     if (!tasker) return { success: false, msg: UserFailure.USER_FOUND }
+
     const task = await TaskRepository.findSingleTaskWithParams({
       _id: payload,
     })
 
     if (!task) return { success: false, msg: TaskFailure.FETCH }
 
+    if (task.status === "accepted" || task.taskStatus === "ongoing")
+      return { success: false, msg: `Tas already accepted or ongoing` }
+
     task.status = "accepted"
     task.taskStatus = "ongoing"
     const saveStatus = await task.save()
 
+    tasker.clients.push(saveStatus.assignedBy)
+
+    await tasker.save()
     const user = await UserRepository.findSingleUserWithParams(
       {
         _id: new mongoose.Types.ObjectId(saveStatus.assignedBy),
       },
       {}
     )
-    tasker.clients.push(saveStatus.assignedBy)
-    await tasker.save()
 
     //send notification to user
     const substitutional_parameters = {
@@ -72,7 +77,7 @@ class TaskService {
     }
 
     await sendMailNotification(
-      contractor.email,
+      user.email,
       "Task Status",
       substitutional_parameters,
       "TASK"
@@ -141,6 +146,25 @@ class TaskService {
     }
   }
 
+  static async getTaskService(payload) {
+    const { error, params, limit, skip, sort } = queryConstructor(
+      payload,
+      "createdAt",
+      "Task"
+    )
+    if (error) return { success: false, msg: error }
+
+    const tasker = await TaskRepository.findAllTaskParams({
+      ...params,
+      limit,
+      skip,
+      sort,
+    })
+
+    if (tasker.length < 1) return { success: true, msg: TaskFailure.LOCATION }
+
+    return { success: true, msg: TaskSuccess.TASKER, data: tasker }
+  }
   static async getTaskerService(payload) {
     const { error, params, limit, skip, sort } = queryConstructor(
       payload,

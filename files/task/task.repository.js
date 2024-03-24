@@ -31,7 +31,7 @@ class TaskRepository {
   }
 
   //get curriculum
-  static async findAllTaskersParams(payload) {
+  static async findAllTaskParams(payload) {
     const { limit, skip, sort, ...restOfPayload } = payload
 
     const task = await Task.find({ ...restOfPayload })
