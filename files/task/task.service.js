@@ -106,7 +106,7 @@ class TaskService {
     }
   }
 
-  static async endContractService(payload) {
+  static async endTaskService(payload) {
     const task = await TaskRepository.findSingleTaskWithParams({
       _id: payload,
     })
@@ -118,7 +118,7 @@ class TaskService {
 
     return {
       success: true,
-      msg: TaskSuccess.DECLINE,
+      msg: `Task updated successfully`,
     }
   }
 
