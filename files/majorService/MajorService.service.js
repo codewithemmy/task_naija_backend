@@ -45,6 +45,36 @@ class MajorService {
     }
   }
 
+  static async fetchMajorServiceByAggregate(query) {
+    const { error, params, limit, skip, sort } = queryConstructor(
+      query,
+      "createdAt",
+      "MajorService"
+    )
+
+    if (error) return { success: false, msg: error }
+
+    const service = await MajorServiceRepository.findMajorServiceAggregate({
+      ...params,
+      limit,
+      skip,
+      sort,
+    })
+
+    if (!service)
+      return {
+        success: true,
+        msg: serviceMessage.SERVICE_NOT_FOUND,
+        data: [],
+      }
+
+    return {
+      success: true,
+      msg: serviceMessage.SERVICE_FETCHED,
+      data: service,
+    }
+  }
+
   static async updateMajorService(payload, params) {
     const service = await MajorServiceRepository.findSingleMajorServiceByParams(
       {

@@ -4,7 +4,7 @@ const MajorServiceSchema = new mongoose.Schema(
   {
     name: { type: String },
     description: { type: String },
-    price: { type: Number },
+    price: { type: String },
     userId: {
       type: mongoose.Types.ObjectId,
       ref: "User",

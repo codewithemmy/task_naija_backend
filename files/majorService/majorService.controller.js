@@ -27,6 +27,18 @@ const fetchServiceController = async (req, res, next) => {
   return responseHandler(res, 200, data)
 }
 
+const fetchServiceAggregateController = async (req, res, next) => {
+  const [error, data] = await manageAsyncOps(
+    MajorService.fetchMajorServiceByAggregate(req.query)
+  )
+  console.log("error", error)
+  if (error) return next(error)
+
+  if (!data.success) return next(new CustomError(data.msg, 400, data))
+
+  return responseHandler(res, 200, data)
+}
+
 const updateServiceController = async (req, res, next) => {
   const [error, data] = await manageAsyncOps(
     MajorService.updateMajorService(req.body, req.params.id)
@@ -43,4 +55,5 @@ module.exports = {
   createServiceController,
   fetchServiceController,
   updateServiceController,
+  fetchServiceAggregateController,
 }
