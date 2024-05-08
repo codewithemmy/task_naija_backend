@@ -103,6 +103,7 @@ class UserService {
       accountType,
       password: hashedPassword,
       rating: [{}],
+      loginType: "normal-login",
     })
 
     if (!user._id) return { success: false, msg: UserFailure.TASKER }

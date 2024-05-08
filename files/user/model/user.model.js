@@ -8,7 +8,17 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      unique: true,
+      validate: {
+        validator: function (v) {
+          // This regex is a simplified version to check for email format
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+        },
+        message: (props) => `${props.value} is not a valid email address!`,
+      },
+    },
+    loginType: {
+      type: String,
+      enum: ["auth-login", "normal-login"],
     },
     accountType: { type: String, enum: ["Tasker", "User"] },
     favoriteBy: [{ type: String }],
