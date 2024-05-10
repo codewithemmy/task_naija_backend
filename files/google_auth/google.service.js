@@ -17,7 +17,7 @@ class GoogleAuthService {
       const user = await UserRepository.create({
         email,
         firstName: family_name,
-        firstName: given_name,
+        lastName: given_name,
         loginType: "auth-login",
         isVerified: true,
       })
